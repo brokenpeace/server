@@ -549,6 +549,13 @@ pipeline:
       when:
         matrix:
           TESTS-ACCEPTANCE: access-levels
+  acceptance-app-comments:
+      image: nextcloudci/integration-php7.0:integration-php7.0-6
+      commands:
+        - tests/acceptance/run-local.sh --timeout-multiplier 10 --nextcloud-server-domain acceptance-app-comments --selenium-server selenium:4444 allow-git-repository-modifications features/app-comments.feature
+      when:
+        matrix:
+          TESTS-ACCEPTANCE: app-comments
   acceptance-app-files:
       image: nextcloudci/integration-php7.0:integration-php7.0-6
       commands:
@@ -727,6 +734,8 @@ matrix:
     - TESTS: acceptance
       TESTS-ACCEPTANCE: access-levels
     - TESTS: acceptance
+      TESTS-ACCEPTANCE: app-comments
+    - TESTS: acceptance
       TESTS-ACCEPTANCE: app-files
     - TESTS: acceptance
       TESTS-ACCEPTANCE: app-theming
@@ -842,9 +851,8 @@ services:
         matrix:
           OBJECT_STORE: s3
   dockswift:
-      image: icewind1991/dockswift
+      image: icewind1991/dockswift:nextcloud-ci
       environment:
-      - INITIALIZE=yes
       - IPADDRESS=dockswift
       when:
         matrix:

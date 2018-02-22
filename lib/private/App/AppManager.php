@@ -380,10 +380,10 @@ class AppManager implements IAppManager {
 		return $data;
 	}
 
-	public function getAppVersion(string $appId, bool $useCache = true) {
+	public function getAppVersion(string $appId, bool $useCache = true): string {
 		if(!$useCache || !isset($this->appVersions[$appId])) {
 			$appInfo = \OC::$server->getAppManager()->getAppInfo($appId);
-			$this->appVersions[$appId] = ($appInfo !== null) ? $appInfo['version'] : '0';
+			$this->appVersions[$appId] = ($appInfo !== null && isset($appInfo['version'])) ? $appInfo['version'] : '0';
 		}
 		return $this->appVersions[$appId];
 	}
@@ -397,7 +397,7 @@ class AppManager implements IAppManager {
 	 *
 	 * @internal
 	 */
-	public function getIncompatibleApps($version) {
+	public function getIncompatibleApps(string $version): array {
 		$apps = $this->getInstalledApps();
 		$incompatibleApps = array();
 		foreach ($apps as $appId) {
@@ -411,6 +411,7 @@ class AppManager implements IAppManager {
 
 	/**
 	 * @inheritdoc
+	 * In case you change this method, also change \OC\App\CodeChecker\InfoChecker::isShipped()
 	 */
 	public function isShipped($appId) {
 		$this->loadShippedJson();
@@ -422,6 +423,10 @@ class AppManager implements IAppManager {
 		return in_array($appId, $alwaysEnabled, true);
 	}
 
+	/**
+	 * In case you change this method, also change \OC\App\CodeChecker\InfoChecker::loadShippedJson()
+	 * @throws \Exception
+	 */
 	private function loadShippedJson() {
 		if ($this->shippedApps === null) {
 			$shippedJson = \OC::$SERVERROOT . '/core/shipped.json';

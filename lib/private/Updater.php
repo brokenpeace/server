@@ -250,7 +250,7 @@ class Updater extends BasicEmitter {
 		$this->upgradeAppStoreApps(\OC::$server->getAppManager()->getInstalledApps());
 
 		// install new shipped apps on upgrade
-		OC_App::loadApps('authentication');
+		OC_App::loadApps(['authentication']);
 		$errors = Installer::installShippedApps(true);
 		foreach ($errors as $appId => $exception) {
 			/** @var \Exception $exception */
@@ -346,7 +346,7 @@ class Updater extends BasicEmitter {
 				if(!isset($stacks[$type])) {
 					$stacks[$type] = array();
 				}
-				if (\OC_App::isType($appId, $type)) {
+				if (\OC_App::isType($appId, [$type])) {
 					$stacks[$type][] = $appId;
 					$priorityType = true;
 					break;
@@ -385,7 +385,7 @@ class Updater extends BasicEmitter {
 	private function checkAppsRequirements() {
 		$isCoreUpgrade = $this->isCodeUpgrade();
 		$apps = OC_App::getEnabledApps();
-		$version = Util::getVersion();
+		$version = implode('.', Util::getVersion());
 		$disabledApps = [];
 		$appManager = \OC::$server->getAppManager();
 		foreach ($apps as $app) {
